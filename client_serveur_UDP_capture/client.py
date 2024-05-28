@@ -10,6 +10,10 @@ PORT = 21000
 BUFFER_SIZE = 1024
 UPDATE_RATE = 5  # Nombre de fois par seconde où les graphiques sont actualisés
 
+# Demande à l'utilisateur la liste des micros à afficher
+user_input = input("Veuillez entrer la liste des micros à afficher (ex: 0,1,2,3,4,5) : ")
+Indices_affiches = list(map(int, user_input.split(',')))
+
 # Déclaration du buffer global
 buffer = "hello\n"
 
@@ -40,8 +44,8 @@ def plot_fft(ax, buffers, rate):
     VOICE_FREQ_MIN = 50
     VOICE_FREQ_MAX = 1000
     buffers_temp = buffers
-    for i, buffer in enumerate(buffers_temp):
-        buf = capture_audio.filtrage(buffer[-int(capture_audio.RESPEAKER_RATE * capture_audio.dt):])
+    for i in Indices_affiches:
+        buf = capture_audio.filtrage(buffers_temp[i][-capture_audio.CHUNK:])
         fft_result = np.fft.fft(buf)
         fft_freq = np.fft.fftfreq(len(buf), 1.0/rate)
         
@@ -68,7 +72,7 @@ def udp_client(buffer_queue):
             buffers = capture_audio.capture_channel(stream, capture_audio.buffers)
             buffer, db_values = change_buffer(buffers)
             sockfd.sendto(buffer.encode(), server_addr)
-            #print(buffer + "\n")
+            print(buffer + "\n")
             buffer = ""
             buffer_queue.put((buffers, db_values))
             #time.sleep(1.0 / UPDATE_RATE)
@@ -98,13 +102,14 @@ def plotter(buffer_queue):
             plot_hexagon(ax_hex, db_values)
 
             # Mise à jour du signal en temps réel
-            time_array = np.linspace(0, capture_audio.dt * capture_audio.buffer_size / capture_audio.RESPEAKER_RATE, num=capture_audio.buffer_size)
-            for i, buf in enumerate(buffers):
+            for i in Indices_affiches:
+                buf = buffers[i]
+                time_array = np.linspace(0, capture_audio.dt * len(buf) / capture_audio.RESPEAKER_RATE, num=len(buf))
                 line_objects[i].set_data(time_array, buf)
 
             ax_signal.draw_artist(ax_signal.patch)
-            for line in line_objects:
-                ax_signal.draw_artist(line)
+            for i in Indices_affiches:
+                ax_signal.draw_artist(line_objects[i])
             fig.canvas.blit(ax_signal.bbox)
             fig.canvas.flush_events()
 
@@ -126,5 +131,6 @@ if __name__ == "__main__":
 
     udp_thread.join()
     plot_thread.join()
+
 
 
