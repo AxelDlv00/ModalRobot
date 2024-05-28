@@ -1,0 +1,6 @@
+axeldelaval@axeldelaval:~$ ssh pi@192.168.0.104
+pi@192.168.0.104's password: "raspberry"
+
+axeldelaval@axeldelaval:~$ sshfs pi@192.168.0.104:~ Raspberry
+pi@192.168.0.104's password: "raspberry"
+
