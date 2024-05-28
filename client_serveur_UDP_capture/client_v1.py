@@ -70,7 +70,7 @@ def client():
         ax_signal.set_xlim(0, capture_audio.dt * capture_audio.buffer_size / capture_audio.RESPEAKER_RATE)
         ax_signal.set_ylim(-32768, 32767)
         ax_signal.set_title('Audio Signal')
-        ax_signal.set_xlabel('Time [s]')
+        ax_signal.set_xlabel('Time')
         ax_signal.set_ylabel('Amplitude')
         ax_signal.legend()
         
@@ -84,12 +84,14 @@ def client():
             # Limiter la fréquence de mise à jour des graphiques
             if update_count % (capture_audio.RESPEAKER_RATE // (capture_audio.CHUNK * UPDATE_RATE)) == 0:
                 plot_hexagon(ax_hex, db_values)
-
                 # Mise à jour du signal en temps réel
                 time_array = np.linspace(0, capture_audio.dt * capture_audio.buffer_size / capture_audio.RESPEAKER_RATE, num=capture_audio.buffer_size)
+                #time_array = np.linspace(0, capture_audio.CHUNK, num=capture_audio.CHUNK)
                 for i, buf in enumerate(buffers):
+                    #buf_ = buf[-capture_audio.CHUNK:]
                     line_objects[i].set_data(time_array, buf)
-
+                
+                
                 ax_signal.draw_artist(ax_signal.patch)
                 for line in line_objects:
                     ax_signal.draw_artist(line)
@@ -98,7 +100,6 @@ def client():
 
                 # Affichage de la FFT en temps réel
                 plot_fft(ax_fft, buffers, capture_audio.RESPEAKER_RATE)
-
                 plt.draw()
 
             update_count += 1
@@ -112,5 +113,7 @@ def client():
 
 # Appel de la fonction client pour démarrer le client
 client()
+
+
 
 
