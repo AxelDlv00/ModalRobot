@@ -3,7 +3,7 @@
 #include <cmath> // Pour std::isnan
 #include <cstdio> // Pour printf
 
-/*
+
 void calcul_angle(float dB[NB_MICROS]) {
     int maxIndex = -1;
     float maxValue = -INFINITY;
@@ -20,19 +20,18 @@ void calcul_angle(float dB[NB_MICROS]) {
     if (maxIndex != -1) {
         // Calcule l'angle associé
         float angle_sortie = maxIndex * ANGLE_INCR;
-        angle_consigne = angle_sortie;
+        angle_consigne = angle_sortie / 4.0f;
     }
 }
-* */
 
+/*
 void calcul_angle(float dB[NB_MICROS]) {
     float prod_scalaire_x = dB[0]-dB[3]+(dB[1]+dB[5]-dB[2]-dB[4])/2.0f;
     float prod_scalaire_y = (dB[1]-dB[5]+dB[2]-dB[4])/std::sqrt(2.0f);
-    if(prod_scalaire_y != 0) angle_consigne = std::atan(prod_scalaire_y/prod_scalaire_x) / 4.0f;
+    if(prod_scalaire_y != 0) angle_consigne = std::atan(prod_scalaire_y/prod_scalaire_x)/ 4.0f; 
     else angle_consigne = 0.0f;
 }
-
-
+*/
 
 
 void avancer(float dB[NB_MICROS]){
